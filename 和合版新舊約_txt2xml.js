@@ -8,13 +8,11 @@ var txtFile=txtDir+file+".txt";
 var txt=fs.readFileSync(txtFile,"utf8").replace(/\r\n/g,"\n");
 
 var nBook=0, book='', xml=[];
-var d2=function(n){
-	return (n<10?'0':'')+n
-}
+var d2=function(n){ return (n<10?'0':'')+n; } // 十進制兩位數字串
 var writeBook=function(b){
 	if(b===book)return; // 正在處理一卷書
 	if(!book)return; // 尚未處理任何一卷書
-	var xmlFile=xmlDir+d2(++nBook)+book+".xml";
+	var xmlFile=xmlDir+d2(++nBook)+book+".xml"; // 處理完一卷書
 	console.log(xmlFile);
 	fs.writeFileSync(xmlFile,xml.join('\n'),"utf8");
 }
