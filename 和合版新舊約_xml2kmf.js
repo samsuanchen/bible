@@ -1,16 +1,27 @@
-var xml2standoff=require("ksana-master-format").xml2standoff;
-
-var standoffutils=require("ksana-master-format").standoffutils;
-
-var testfile=process.argv[2]||"和合版新舊約.xml";
 var fs=require("fs");
-var testcontent=fs.readFileSync(testfile,"utf8").replace(/\r\n/g,"\n");
-var json=xml2standoff(testcontent);
-var tags=json.tags, endtags=json.endtags;
-var text=json.text.replace("`","\\`");
 
-//remove /u
+var KMF=require("ksana-master-format");
+var xml2standoff=KMF.xml2standoff;
+var standoffutils=KMF.standoffutils;
 
-var out=standoffutils.stringify(json);
-fs.writeFileSync(testfile.substr(0,testfile.length-4)+".kmf",out,"utf8");
+var dir=process.argv[2]||"和合版新舊約";
+var xmlDir=dir+"/xml/", kmfDir=dir+"/kmf/";
 
+var list=fs.readdirSync(xmlDir);
+if(!list){ console.log("?????",xmlDir,"無此資料夾"); return; }
+fs.existsSync(kmfDir) || fs.mkdirSync(kmfDir);
+for(var i=0;i<list.length;i++){
+	name=list[i];
+	if(!name.match(/\.xml$/)){
+		console.log('?????',name,'not .xml file');
+		exit;
+	}
+	var file=name.substr(0,name.length-4);
+	var xmlFile=xmlDir+file+".xml";
+	var xml=fs.readFileSync(xmlFile,"utf8").replace(/\r\n/g,"\n");
+	console.log(xmlFile,xml.length);
+	var json=xml2standoff(xml);
+	var kmf=standoffutils.stringify(json);
+
+	fs.writeFileSync(kmfDir+file+".kmf",kmf,"utf8");
+}
